@@ -21,7 +21,6 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 
 # ================== VENTANA EMERGENTE (MODAL) ==================
 class AnuncioModal(discord.ui.Modal, title='Redactar Anuncio Oficial'):
-    # Cuadro de texto de estilo párrafo para permitir saltos de línea (Enter)
     texto_anuncio = discord.ui.TextInput(
         label='Contenido del anuncio',
         style=discord.TextStyle.paragraph,
@@ -32,7 +31,6 @@ class AnuncioModal(discord.ui.Modal, title='Redactar Anuncio Oficial'):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        # Creamos el embed con el contenido del cuadro de texto
         embed = discord.Embed(
             title="📢 ANUNCIO OFICIAL",
             description=self.texto_anuncio.value,
@@ -41,9 +39,7 @@ class AnuncioModal(discord.ui.Modal, title='Redactar Anuncio Oficial'):
         )
         embed.set_footer(text="Equipo de Administración • Mensaje oficial")
         
-        # Enviamos el anuncio al canal donde se usó el comando
         await interaction.channel.send(embed=embed)
-        # Respondemos al usuario de forma privada para confirmar
         await interaction.response.send_message("✅ Anuncio publicado con éxito.", ephemeral=True)
 
 # ================== READY ==================
@@ -61,12 +57,9 @@ async def on_ready():
 # ================== SLASH COMMAND /mensaje ==================
 @bot.tree.command(name="mensaje", description="Abre un formulario para enviar un anuncio con párrafos")
 async def mensaje(interaction: discord.Interaction):
-    # Verificación de administrador
     if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("❌ No tienes permisos para usar este comando.", ephemeral=True)
+        await interaction.response.send_message("❌ No tienes permisos.", ephemeral=True)
         return
-
-    # Llamamos a la ventana emergente definida arriba
     await interaction.response.send_modal(AnuncioModal())
 
 # ================== COMANDO !pagos ==================
@@ -85,6 +78,26 @@ async def pagos(ctx):
         timestamp=discord.utils.utcnow()
     )
     embed.set_footer(text="Pagos seguros y verificados")
+    await ctx.send(embed=embed)
+
+# ================== NUEVO COMANDO !reseñas ==================
+@bot.command(name="reseñas")
+async def reseñas(ctx):
+    embed = discord.Embed(
+        title="⭐ DEJA TU VALORACIÓN",
+        description=(
+            "Tu opinión es muy importante para nosotros. Si has utilizado nuestro servicio, "
+            "por favor deja una reseña siguiendo estos pasos:\n\n"
+            "1️⃣ Usa el comando **/vouch**.\n"
+            "2️⃣ Selecciona una valoración de **5 estrellas** (⭐⭐⭐⭐⭐).\n"
+            "3️⃣ Cuéntanos tu experiencia (el **antes y después** del servicio).\n"
+            "4️⃣ No olvides **adjuntar una prueba** (captura de pantalla).\n\n"
+            "¡Gracias por confiar en nosotros!"
+        ),
+        color=discord.Color.from_rgb(255, 215, 0), # Color Dorado/Oro
+        timestamp=discord.utils.utcnow()
+    )
+    embed.set_footer(text="Sistema de Valoraciones • MNZ Leaks")
     
     await ctx.send(embed=embed)
 
