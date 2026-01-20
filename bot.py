@@ -61,7 +61,7 @@ async def pagos(ctx):
         title="💳 Métodos de Pago",
         description=(
             "Aceptamos los siguientes métodos de pago:\n\n"
-            "• <a:check:1089104791453569106> **PayPal**\n" # Asegúrate que los IDs de emoji son correctos
+            "• **PayPal**\n" # Asegúrate que los IDs de emoji son correctos
             "• **Bizum**\n"
             "• **Transferencia bancaria**\n"
             "• **Criptomonedas**\n\n"
