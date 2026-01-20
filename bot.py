@@ -17,7 +17,7 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# ===== EVENTO READY =====
+# ================== EVENTO READY ==================
 @bot.event
 async def on_ready():
     print(f"Bot conectado como {bot.user}")
@@ -27,12 +27,11 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-# ===== SLASH COMMAND /mensaje =====
+# ================== SLASH COMMAND /mensaje ==================
 @bot.tree.command(name="mensaje", description="Envía un anuncio profesional")
 @app_commands.describe(texto="Contenido del mensaje")
 async def mensaje(interaction: discord.Interaction, texto: str):
 
-    # Solo administradores
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message(
             "❌ No tienes permisos para usar este comando.",
@@ -40,13 +39,12 @@ async def mensaje(interaction: discord.Interaction, texto: str):
         )
         return
 
-    # Acknowledge
     await interaction.response.defer()
 
     embed = discord.Embed(
         title="📢 ANUNCIO OFICIAL",
         description=texto,
-        color=discord.Color.from_rgb(180, 0, 0)  # ROJO OSCURO
+        color=discord.Color.from_rgb(180, 0, 0)  # ROJO
     )
 
     embed.set_footer(text="Equipo de Administración • Mensaje oficial")
@@ -54,7 +52,7 @@ async def mensaje(interaction: discord.Interaction, texto: str):
 
     await interaction.followup.send(embed=embed)
 
-# ===== COMANDO !pagos =====
+# ================== COMANDO !pagos ==================
 @bot.command()
 async def pagos(ctx):
 
@@ -71,4 +69,10 @@ async def pagos(ctx):
         color=discord.Color.from_rgb(0, 0, 0)  # NEGRO
     )
 
-    embed.
+    embed.set_footer(text="Pagos seguros y verificados")
+    embed.set_timestamp()
+
+    await ctx.send(embed=embed)
+
+# ================== RUN ==================
+bot.run(TOKEN)
