@@ -60,9 +60,9 @@ async def pagos(ctx):
         title="💳 Métodos de Pago",
         description=(
             "Aceptamos los siguientes métodos de pago:\n\n"
-            "• <:l_ppal:>  **PayPal**\n"
-            "• <:l_bzm:>  **Bizum**\n"
-            "• <:l_btc:>  **Criptomonedas**\n\n"
+            "• <:l_ppal:1463190933708210328>  **PayPal**\n"
+            "• <:l_bzm:1463190383071592488>  **Bizum**\n"
+            "• <:l_btc:1463190321713250305>  **Criptomonedas**\n\n"
             "Para más información, abre un ticket."
         ),
         color=discord.Color.from_rgb(1, 1, 1),
