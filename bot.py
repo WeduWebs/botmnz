@@ -4,20 +4,20 @@ from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv
 
-# Carga las variables de entorno desde .env (en local)
+# Cargar variables de entorno
 load_dotenv()
-
-# Obtiene el token de la variable de entorno
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 if not TOKEN:
     raise ValueError("❌ No se encontró la variable de entorno DISCORD_TOKEN")
 
+# Intents
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+# ===== EVENTO READY =====
 @bot.event
 async def on_ready():
     print(f"Bot conectado como {bot.user}")
@@ -27,12 +27,12 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-
-# SLASH COMMAND /mensaje (solo administradores)
-@bot.tree.command(name="mensaje", description="Envía un mensaje profesional")
-@app_commands.describe(texto="El mensaje que quieres enviar")
+# ===== SLASH COMMAND /mensaje =====
+@bot.tree.command(name="mensaje", description="Envía un anuncio profesional")
+@app_commands.describe(texto="Contenido del mensaje")
 async def mensaje(interaction: discord.Interaction, texto: str):
 
+    # Solo administradores
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message(
             "❌ No tienes permisos para usar este comando.",
@@ -40,19 +40,21 @@ async def mensaje(interaction: discord.Interaction, texto: str):
         )
         return
 
+    # Acknowledge
+    await interaction.response.defer()
+
     embed = discord.Embed(
-        title="📢 Anuncio Importante",
+        title="📢 ANUNCIO OFICIAL",
         description=texto,
-        color=discord.Color.blue()
+        color=discord.Color.from_rgb(180, 0, 0)  # ROJO OSCURO
     )
 
-    embed.set_footer(text="Equipo de Administración")
+    embed.set_footer(text="Equipo de Administración • Mensaje oficial")
     embed.set_timestamp()
 
-    await interaction.response.send_message(embed=embed)
+    await interaction.followup.send(embed=embed)
 
-
-# COMANDO !pagos
+# ===== COMANDO !pagos =====
 @bot.command()
 async def pagos(ctx):
 
@@ -60,18 +62,13 @@ async def pagos(ctx):
         title="💳 Métodos de Pago",
         description=(
             "Aceptamos los siguientes métodos de pago:\n\n"
-            "• **PayPal**\n"
-            "• **Bizum**\n"
-            "• **Transferencia bancaria**\n"
-            "• **Criptomonedas**\n\n"
+            "• <:I_paypal:1089104791453569106> **PayPal**\n"
+            "• <:bizum2:1322968080460156970> **Bizum**\n"
+            "• <:I_bank:1089229057167740998> **Transferencia bancaria**\n"
+            "• <:logoscryptosbitcoin:1431600912539058186> **Criptomonedas**\n\n"
             "Para más información, abre un ticket."
         ),
-        color=discord.Color.green()
+        color=discord.Color.from_rgb(0, 0, 0)  # NEGRO
     )
 
-    embed.set_footer(text="Pagos seguros y verificados")
-
-    await ctx.send(embed=embed)
-
-
-bot.run(TOKEN)
+    embed.
