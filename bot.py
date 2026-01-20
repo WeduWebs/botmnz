@@ -62,16 +62,16 @@ async def mensaje(interaction: discord.Interaction):
         return
     await interaction.response.send_modal(AnuncioModal())
 
-# ================== COMANDO !pagos ==================
+# ================== COMANDO !pagos (MENÚ) ==================
 @bot.command(name="pagos")
 async def pagos(ctx):
     embed = discord.Embed(
         title="💳 Métodos de Pago",
         description=(
-            "Aceptamos los siguientes métodos de pago:\n\n"
-            "• <:l_ppal:1463190933708210328> **PayPal**\n"
-            "• <:l_bzm:1463190383071592488> **Bizum**\n"
-            "• <:l_btc:1463190321713250305> **Criptomonedas**\n\n"
+            "Aceptamos los siguientes métodos de pago. Para ver los datos de envío, usa el comando correspondiente:\n\n"
+            "• <:l_ppal:1463190933708210328> **PayPal** -> Escribe `!paypal` \n"
+            "• <:l_bzm:1463190383071592488> **Bizum** -> Escribe `!bizum` \n"
+            "• <:l_btc:1463190321713250305> **Criptomonedas** -> Escribe `!crypto` \n\n"
             "Para más información, abre un ticket."
         ),
         color=discord.Color.from_rgb(1, 1, 1),
@@ -80,7 +80,45 @@ async def pagos(ctx):
     embed.set_footer(text="Pagos seguros y verificados")
     await ctx.send(embed=embed)
 
-# ================== NUEVO COMANDO !reseñas ==================
+# ================== COMANDOS INDIVIDUALES DE PAGO ==================
+
+@bot.command(name="paypal")
+async def paypal(ctx):
+    embed = discord.Embed(
+        title="<:l_ppal:1463190933708210328> Información de PayPal",
+        description=(
+            "**Correo:** `fmunozfdez@gmail.com` \n"
+            "**Modalidad:** Amigos y Familia (Family & Friends)"
+        ),
+        color=discord.Color.blue(),
+        timestamp=discord.utils.utcnow()
+    )
+    await ctx.send(embed=embed)
+
+@bot.command(name="bizum")
+async def bizum(ctx):
+    embed = discord.Embed(
+        title="<:l_bzm:1463190383071592488> Información de Bizum",
+        description=(
+            "**Número:** `+34 609 55 07 14` \n"
+            "**Concepto:** Sin concepto"
+        ),
+        color=discord.Color.from_rgb(31, 191, 179), # Color característico de Bizum
+        timestamp=discord.utils.utcnow()
+    )
+    await ctx.send(embed=embed)
+
+@bot.command(name="crypto")
+async def crypto(ctx):
+    embed = discord.Embed(
+        title="<:l_btc:1463190321713250305> Información de Cripto",
+        description="Contacte con soporte para más información sobre este metodo de pago.",
+        color=discord.Color.orange(),
+        timestamp=discord.utils.utcnow()
+    )
+    await ctx.send(embed=embed)
+
+# ================== COMANDO !reseñas ==================
 @bot.command(name="reseñas")
 async def reseñas(ctx):
     embed = discord.Embed(
@@ -94,12 +132,10 @@ async def reseñas(ctx):
             "4️⃣ No olvides **adjuntar una prueba** (captura de pantalla).\n\n"
             "¡Gracias por confiar en nosotros!"
         ),
-        color=discord.Color.from_rgb(255, 215, 0), # Color Dorado/Oro
+        color=discord.Color.from_rgb(255, 215, 0),
         timestamp=discord.utils.utcnow()
     )
     embed.set_footer(text="Sistema de Valoraciones • MNZ Leaks")
-    
     await ctx.send(embed=embed)
 
-# ================== EJECUCIÓN ==================
 bot.run(TOKEN)
