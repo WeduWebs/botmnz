@@ -4,20 +4,19 @@ from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv
 
-# Cargar variables de entorno
+# ================== CONFIG ==================
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 if not TOKEN:
     raise ValueError("❌ No se encontró la variable de entorno DISCORD_TOKEN")
 
-# Intents
 intents = discord.Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# ================== EVENTO READY ==================
+# ================== READY ==================
 @bot.event
 async def on_ready():
     print(f"Bot conectado como {bot.user}")
@@ -27,7 +26,7 @@ async def on_ready():
     except Exception as e:
         print(e)
 
-# ================== SLASH COMMAND /mensaje ==================
+# ================== /mensaje ==================
 @bot.tree.command(name="mensaje", description="Envía un anuncio profesional")
 @app_commands.describe(texto="Contenido del mensaje")
 async def mensaje(interaction: discord.Interaction, texto: str):
@@ -39,8 +38,6 @@ async def mensaje(interaction: discord.Interaction, texto: str):
         )
         return
 
-    await interaction.response.defer()
-
     embed = discord.Embed(
         title="📢 ANUNCIO OFICIAL",
         description=texto,
@@ -50,9 +47,9 @@ async def mensaje(interaction: discord.Interaction, texto: str):
     embed.set_footer(text="Equipo de Administración • Mensaje oficial")
     embed.set_timestamp()
 
-    await interaction.followup.send(embed=embed)
+    await interaction.response.send_message(embed=embed)
 
-# ================== COMANDO !pagos ==================
+# ================== !pagos ==================
 @bot.command()
 async def pagos(ctx):
 
