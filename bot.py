@@ -16,21 +16,25 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+GUILD_ID = 1462154477040701605  # ⬅️ Tu servidor
+
 # ================== READY ==================
 @bot.event
 async def on_ready():
     print(f"Bot conectado como {bot.user}")
-    try:
-        synced = await bot.tree.sync()
-        print(f"Slash commands sincronizados: {len(synced)}")
-    except Exception as e:
-        print(e)
 
-# ================== /mensaje ==================
+    guild = discord.Object(id=GUILD_ID)
+
+    # Limpiamos y registramos los comandos solo en tu servidor
+    bot.tree.clear_commands(guild=guild)
+    bot.tree.copy_global_to(guild=guild)
+    synced = await bot.tree.sync(guild=guild)
+    print(f"Slash commands sincronizados en guild: {len(synced)}")
+
+# ================== SLASH COMMAND /mensaje ==================
 @bot.tree.command(name="mensaje", description="Envía un anuncio profesional")
 @app_commands.describe(texto="Contenido del mensaje")
 async def mensaje(interaction: discord.Interaction, texto: str):
-
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message(
             "❌ No tienes permisos para usar este comando.",
@@ -49,10 +53,9 @@ async def mensaje(interaction: discord.Interaction, texto: str):
 
     await interaction.response.send_message(embed=embed)
 
-# ================== !pagos ==================
+# ================== COMANDO !pagos ==================
 @bot.command()
 async def pagos(ctx):
-
     embed = discord.Embed(
         title="💳 Métodos de Pago",
         description=(
