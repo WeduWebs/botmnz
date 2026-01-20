@@ -1,8 +1,17 @@
+import os
 import discord
 from discord.ext import commands
 from discord import app_commands
+from dotenv import load_dotenv
 
-TOKEN = "MTQ2MzE2NzQ5OTI4NDc3OTA4MA.GjkgOw.Ma3vwLgIPBSjJruTsXlrss08FWDobkl-x23QpU"
+# Carga las variables de entorno desde .env (en local)
+load_dotenv()
+
+# Obtiene el token de la variable de entorno
+TOKEN = os.getenv("DISCORD_TOKEN")
+
+if not TOKEN:
+    raise ValueError("❌ No se encontró la variable de entorno DISCORD_TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -53,7 +62,9 @@ async def pagos(ctx):
             "Aceptamos los siguientes métodos de pago:\n\n"
             "• **PayPal**\n"
             "• **Bizum**\n"
+            "• **Transferencia bancaria**\n"
             "• **Criptomonedas**\n\n"
+            "Para más información, abre un ticket."
         ),
         color=discord.Color.green()
     )
