@@ -203,4 +203,14 @@ async def reseñas(ctx):
     embed.set_footer(text="Sistema de Valoraciones • MNZ Leaks")
     await ctx.send(embed=embed)
 
+#===BROMITA
+@bot.command(name="munoz")
+async def munoz(ctx):
+    embed = discord.Embed(
+        description="Asi se ve el colega",
+        color=discord.Color.from_rgb(1, 1, 1)
+    )
+    embed.set_image(url="https://i.imgur.com/L5e0OfQ.png")
+    await ctx.send(embed=embed)
+    
 bot.run(TOKEN)
