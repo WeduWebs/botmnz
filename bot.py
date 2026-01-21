@@ -426,4 +426,91 @@ async def clear(interaction: discord.Interaction, cantidad: int = None, usuario:
             
         deleted = await interaction.channel.purge(limit=cantidad)
         await interaction.followup.send(f"✅ Se han eliminado **{len(deleted)}** mensajes del canal.", ephemeral=True)
+        # ================== SISTEMA DE MODERACIÓN Y ANTI-SPAM ==================
+
+# --- 1. COMANDO /WARN ---
+@bot.tree.command(name="warn", description="Añade un aviso a un usuario (3 warns = Expulsión)")
+@app_commands.describe(usuario="Usuario a avisar", razon="Motivo del aviso")
+async def warn(interaction: discord.Interaction, usuario: discord.Member, razon: str):
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("❌ No tienes permisos para usar este comando.", ephemeral=True)
+        return
+
+    if usuario.guild_permissions.administrator:
+        await interaction.response.send_message("❌ No puedes poner un warn a otro administrador.", ephemeral=True)
+        return
+
+    # Definir nombres de roles de warn
+    nombres_warns = ["Warn 1", "Warn 2", "Warn 3"]
+    roles_actuales = [r for r in usuario.roles if r.name in nombres_warns]
+    proximo_warn = len(roles_actuales) + 1
+
+    # Crear o buscar el rol necesario
+    rol_obj = discord.utils.get(interaction.guild.roles, name=f"Warn {proximo_warn}")
+    if not rol_obj:
+        rol_obj = await interaction.guild.create_role(name=f"Warn {proximo_warn}", color=discord.Color.orange())
+
+    # Aplicar el rol
+    await usuario.add_roles(rol_obj)
+
+    # Crear Embed de aviso
+    embed = discord.Embed(
+        title="⚠️ USUARIO ADVERTIDO",
+        description=f"El usuario {usuario.mention} ha recibido un aviso.",
+        color=discord.Color.from_rgb(255, 0, 0)
+    )
+    embed.add_field(name="Razón", value=razon, inline=False)
+    embed.add_field(name="Aviso número", value=f"{proximo_warn} / 3", inline=True)
+    embed.add_field(name="Moderador", value=interaction.user.mention, inline=True)
+    embed.set_footer(text="MNZ Leaks • Moderación")
+
+    await interaction.channel.send(embed=embed)
+    await interaction.response.send_message(f"✅ Warn aplicado a {usuario.name}.", ephemeral=True)
+
+    # Si llega a 3 warns, expulsar
+    if proximo_warn >= 3:
+        try:
+            await usuario.send(f"Has sido expulsado de **MNZ Leaks** por acumular 3 avisos. Última razón: {razon}")
+            await usuario.kick(reason="Acumulación de 3 warns")
+            await interaction.channel.send(f"👢 {usuario.name} ha sido expulsado automáticamente tras recibir su tercer warn.")
+        except Exception as e:
+            await interaction.channel.send(f"❌ No pude expulsar a {usuario.name}: {e}")
+
+# --- 2. EVENTO ANTI-EVERYONE / ANTI-HERE ---
+@bot.event
+async def on_message(message):
+    # Ignorar mensajes del propio bot
+    if message.author.bot:
+        return
+
+    # Verificar si el mensaje contiene @everyone o @here
+    if "@everyone" in message.content or "@here" in message.content:
+        # Si NO es administrador, banear
+        if not message.author.guild_permissions.administrator:
+            try:
+                razon_ban = "Intento de mención masiva (@everyone/@here) sin permisos."
+                
+                # Enviar MD al usuario antes del ban
+                try:
+                    await message.author.send(f"Has sido baneado de **MNZ Leaks**. Razón: {razon_ban}")
+                except: pass
+
+                await message.author.ban(reason=razon_ban, delete_message_days=1)
+                
+                # Avisar en el canal
+                embed_ban = discord.Embed(
+                    title="🚫 USUARIO BANEADO AUTOMÁTICAMENTE",
+                    description=f"{message.author.mention} ha sido baneado por intentar usar menciones masivas.",
+                    color=discord.Color.red()
+                )
+                embed_ban.add_field(name="Razón", value=razon_ban)
+                await message.channel.send(embed=embed_ban)
+                
+                # Borrar el mensaje que causó el baneo
+                await message.delete()
+            except Exception as e:
+                print(f"Error al banear por mención masiva: {e}")
+
+    # IMPORTANTE: Esto permite que otros comandos !prefix sigan funcionando
+    await bot.process_commands(message)
 bot.run(TOKEN)
