@@ -5,7 +5,6 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from dotenv import load_dotenv
-from PIL import Image, ImageDraw, ImageFont
 
 # ================== CONFIG ==================
 load_dotenv()
@@ -19,14 +18,8 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-# ELIMINAMOS EL HELP POR DEFECTO AQUÍ
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-Entendido, he ajustado el título a MNZ LEAKS y he cambiado el color del borde del Embed a negro absoluto para que se fusione totalmente con el fondo y el GIF.
-
-Aquí tienes el código de la función actualizado:
-
-Python
 # ================== EVENTO DE BIENVENIDA (EMBED NEGRO + GIF MNZ) ==================
 @bot.event
 async def on_member_join(member):
@@ -35,27 +28,20 @@ async def on_member_join(member):
     channel = member.guild.get_channel(ID_CANAL_BIENVENIDA)
     
     if channel:
-        # Obtenemos el número total de miembros del servidor
         total_miembros = member.guild.member_count
         
-        # Color negro puro (0, 0, 0) para el borde del Embed
+        # Embed Negro con Título MNZ LEAKS
         embed = discord.Embed(
             title="MNZ LEAKS",
             description=f"**Bienvenida**\n\nTe damos la bienvenida a **MNZ Leaks**\n{member.mention} ya somos {total_miembros} personas en el discord",
             color=discord.Color.from_rgb(0, 0, 0) 
         )
-        
-        # Añadimos tu GIF animado
         embed.set_image(url=URL_GIF)
-        
-        # Pie de página actualizado
         embed.set_footer(text="MNZ Leaks. | Bienvenida")
         
-        # Enviamos el mensaje al canal
         await channel.send(embed=embed)
 
     # --- MENSAJE DIRECTO (MD) ---
-    # Lo mantenemos exactamente igual a como lo tenías porque funciona bien
     try:
         embed_md = discord.Embed(
             title="🚀 ¡Bienvenido a MNZ Leaks!",
@@ -186,16 +172,14 @@ async def opti(ctx):
             "💻 **Universal:** Sirve para cualquier PC con cualquier componente.\n\n"
             "💎 **Calidad/Precio:** Contamos con el **precio más bajo** garantizado para una optimización de este nivel."
         ),
-        color=discord.Color.from_rgb(1, 1, 1), # COLOR NEGRO AJUSTADO
+        color=discord.Color.from_rgb(1, 1, 1),
         timestamp=discord.utils.utcnow()
     )
-    
     embed.add_field(
         name="📊 Mira los Resultados",
         value="[Haz clic aquí para ver pruebas reales](https://discord.com/channels/1462154477040701605/1462235098198970611)",
         inline=False
     )
-    
     embed.set_footer(text="MNZ Leaks • Calidad y Rendimiento")
     await ctx.send(embed=embed)
 
@@ -264,37 +248,23 @@ async def reseñas(ctx):
     await ctx.send(embed=embed)
 
 # ================== SISTEMA DE TICKETS PROFESIONAL MNZ ==================
-
 class TicketControlView(discord.ui.View):
-    """Vista con botón de cierre restringido a Administradores."""
     def __init__(self):
         super().__init__(timeout=None)
 
     @discord.ui.button(label="Close", style=discord.ButtonStyle.secondary, emoji="🔒", custom_id="close_ticket")
     async def close_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        # VERIFICACIÓN DE SEGURIDAD: Solo admins pueden cerrar
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("❌ Solo los Administradores pueden cerrar este ticket.", ephemeral=True)
             return
-
         await interaction.response.send_message("Cerrando ticket...", ephemeral=True)
         await interaction.channel.delete()
 
 class TicketDropdown(discord.ui.Select):
     def __init__(self):
         options = [
-            discord.SelectOption(
-                label="Comprar Optimización", 
-                description="Abre un ticket para adquirir nuestros servicios.",
-                emoji="<:emojidollar:1462171745917210735>", 
-                value="compra"
-            ),
-            discord.SelectOption(
-                label="Soporte / Dudas", 
-                description="Si tienes problemas técnicos o preguntas generales.",
-                emoji="<:emojitio:1462159167920799754>", 
-                value="soporte"
-            ),
+            discord.SelectOption(label="Comprar Optimización", description="Abre un ticket para adquirir nuestros servicios.", emoji="<:emojidollar:1462171745917210735>", value="compra"),
+            discord.SelectOption(label="Soporte / Dudas", description="Si tienes problemas técnicos o preguntas generales.", emoji="<:emojitio:1462159167920799754>", value="soporte"),
         ]
         super().__init__(placeholder="Selecciona una categoría...", min_values=1, max_values=1, options=options, custom_id="ticket_select")
 
@@ -302,7 +272,6 @@ class TicketDropdown(discord.ui.Select):
         ID_ROL_STAFF = 1462155140059365643
         ID_CAT_COMPRA = 1462161096013250791
         ID_CAT_SOPORTE = 1462161017068064889
-
         guild = interaction.guild
         staff_role = guild.get_role(ID_ROL_STAFF)
         
@@ -318,24 +287,16 @@ class TicketDropdown(discord.ui.Select):
             interaction.user: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True),
             staff_role: discord.PermissionOverwrite(view_channel=True, send_messages=True, attach_files=True)
         }
-
         channel = await guild.create_text_channel(name=ticket_name, category=category, overwrites=overwrites)
         
-        # DISEÑO ESTILO IMAGEN CON FOOTER Y THUMBNAIL
         embed_welcome = discord.Embed(
-            description=(
-                "Los staffs se pondrán en contacto contigo lo antes posible, evita mencionarlos sin su permiso.\n"
-                "Gracias."
-            ),
+            description=("Los staffs se pondrán en contacto contigo lo antes posible, evita mencionarlos sin su permiso.\nGracias."),
             color=discord.Color.from_rgb(1, 1, 1)
         )
-        
         if interaction.guild.icon:
             embed_welcome.set_thumbnail(url=interaction.guild.icon.url)
             embed_welcome.set_author(name="MNZ Leaks", icon_url=interaction.guild.icon.url)
-            
         embed_welcome.set_footer(text="MNZ Leaks • Soporte Profesional")
-        
         await channel.send(content=f"{interaction.user.mention} <@&{ID_ROL_STAFF}>", embed=embed_welcome, view=TicketControlView())
         await interaction.response.send_message(f"✅ Ticket abierto en {channel.mention}", ephemeral=True)
 
@@ -344,39 +305,25 @@ class TicketLauncher(discord.ui.View):
         super().__init__(timeout=None)
         self.add_item(TicketDropdown())
 
-# COMANDO SLASH /TICKET
 @bot.tree.command(name="ticket", description="Muestra el panel de creación de tickets")
 async def ticket(interaction: discord.Interaction):
     if not interaction.user.guild_permissions.administrator:
         await interaction.response.send_message("❌ No tienes permisos.", ephemeral=True)
         return
-
     embed = discord.Embed(
         title="🎫 SISTEMA DE TICKETS",
-        description=(
-            "Si necesitas contactar con nosotros, selecciona la categoría que mejor se adapte a tu necesidad en el menú de abajo.\n\n"
-            "**Categorías:**\n"
-            "<:emojidollar:1462171745917210735> **Compras:** Para adquirir optimizaciones.\n"
-            "<:emojitio:1462159167920799754> **Soporte:** Dudas técnicas o problemas."
-        ),
+        description=("Si necesitas contactar con nosotros, selecciona la categoría que mejor se adapte a tu necesidad en el menú de abajo.\n\n**Categorías:**\n<:emojidollar:1462171745917210735> **Compras:** Para adquirir optimizaciones.\n<:emojitio:1462159167920799754> **Soporte:** Dudas técnicas o problemas."),
         color=discord.Color.from_rgb(1, 1, 1)
     )
-    
     if interaction.guild.icon:
         embed.set_thumbnail(url=interaction.guild.icon.url)
-    
     embed.set_footer(text="MNZ Leaks • Calidad y Rendimiento")
-    
     await interaction.channel.send(embed=embed, view=TicketLauncher())
     await interaction.response.send_message("Panel enviado.", ephemeral=True)
 
-# COMANDO BROMA !MUNOZ
 @bot.command(name="munoz")
 async def munoz(ctx):
-    embed = discord.Embed(
-        description="Asi se ve el colega",
-        color=discord.Color.from_rgb(1, 1, 1)
-    )
+    embed = discord.Embed(description="Asi se ve el colega", color=discord.Color.from_rgb(1, 1, 1))
     embed.set_image(url="https://i.imgur.com/L5e0OfQ.png")
     await ctx.send(embed=embed)
 
