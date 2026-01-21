@@ -580,7 +580,7 @@ async def pablecho(ctx):
     )
     
     await ctx.send(embed=embed)
- # ================== SLASH COMMAND /RENAME (SILENCIOSO) ==================
+# ================== SLASH COMMAND /RENAME (SILENCIOSO Y FUNCIONAL) ==================
 @bot.tree.command(name="rename", description="Cambia el nombre del canal actual de forma silenciosa")
 @app_commands.describe(nombre="El nuevo nombre para este canal")
 async def rename(interaction: discord.Interaction, nombre: str):
@@ -589,15 +589,19 @@ async def rename(interaction: discord.Interaction, nombre: str):
         await interaction.response.send_message("❌ No tienes permisos para usar este comando.", ephemeral=True)
         return
 
+    # Usamos defer con ephemeral=True para evitar el error de "La aplicación no respondió"
+    # Esto le dice a Discord que el bot está procesando la solicitud.
+    await interaction.response.defer(ephemeral=True)
+
     try:
-        # Cambiamos el nombre del canal
+        # Realizamos el cambio de nombre
         await interaction.channel.edit(name=nombre)
         
-        # Respuesta efímera (solo la ve el admin) para confirmar que funcionó
-        await interaction.response.send_message(f"✅ Canal renombrado a `{nombre}` con éxito.", ephemeral=True)
+        # Confirmamos solo al administrador que se ha realizado con éxito
+        await interaction.followup.send(f"✅ Canal renombrado a `{nombre}` con éxito.", ephemeral=True)
 
     except discord.Forbidden:
-        await interaction.response.send_message("❌ No tengo permisos suficientes para editar este canal (revisa mi jerarquía).", ephemeral=True)
+        await interaction.followup.send("❌ Error: No tengo permisos suficientes (revisa mi jerarquía de roles).", ephemeral=True)
     except Exception as e:
-        await interaction.response.send_message(f"❌ Ocurrió un error: {e}", ephemeral=True)
+        await interaction.followup.send(f"❌ Ocurrió un error inesperado: {e}", ephemeral=True)
 bot.run(TOKEN)
