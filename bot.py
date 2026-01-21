@@ -22,77 +22,78 @@ intents.members = True
 # ELIMINAMOS EL HELP POR DEFECTO AQUÍ
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# ================== EVENTO DE BIENVENIDA OPTIMIZADO ==================
+# ================== EVENTO DE BIENVENIDA CON FUENTE PROFESIONAL ==================
 @bot.event
 async def on_member_join(member):
-    # IDs y URLs originales
     ID_CANAL_BIENVENIDA = 1462161394324607161
     URL_FONDO = "https://i.imgur.com/eB2c79T.png"
+    # Fuente profesional (Roboto Bold) para que no dependa del sistema
+    URL_FUENTE = "https://github.com/google/fonts/raw/main/apache/robotoslab/RobotoSlab%5Bwght%5D.ttf"
+    
     channel = member.guild.get_channel(ID_CANAL_BIENVENIDA)
     
     if channel:
         try:
-            # 1. Descargar el fondo con un User-Agent para evitar bloqueos
             headers = {"User-Agent": "Mozilla/5.0"}
+            
+            # 1. Descargar Fondo
             resp_fondo = requests.get(URL_FONDO, headers=headers, timeout=10)
             fondo = Image.open(io.BytesIO(resp_fondo.content)).convert("RGBA")
             
-            # 2. Descargar el avatar del usuario
+            # 2. Descargar Avatar
             avatar_url = member.display_avatar.with_format("png").url
             resp_avatar = requests.get(avatar_url, headers=headers, timeout=10)
             avatar_img = Image.open(io.BytesIO(resp_avatar.content)).convert("RGBA")
             
-            # 3. Crear el círculo para el avatar
-            size = (280, 280)
+            # 3. Descargar Fuente Profesional
+            resp_font = requests.get(URL_FUENTE, headers=headers, timeout=10)
+            fuente_pro = io.BytesIO(resp_font.content)
+
+            # 4. Procesar Avatar Circular
+            size = (300, 300) # Un poco más grande
             avatar_img = avatar_img.resize(size, Image.LANCZOS)
-            
             mask = Image.new('L', size, 0)
             draw_mask = ImageDraw.Draw(mask)
             draw_mask.ellipse((0, 0) + size, fill=255)
             
-            # Crear imagen transparente para el avatar circular
             circular_avatar = Image.new('RGBA', size, (0, 0, 0, 0))
             circular_avatar.paste(avatar_img, (0, 0), mask)
 
-            # 4. Posicionar el avatar en el centro del fondo
-            # Ajustamos un poco hacia arriba para dejar espacio al texto
+            # 5. Pegar Avatar
             pos_x = (fondo.width // 2) - (size[0] // 2)
-            pos_y = (fondo.height // 2) - (size[1] // 2) - 50 
+            pos_y = (fondo.height // 2) - (size[1] // 2) - 60 
             fondo.paste(circular_avatar, (pos_x, pos_y), circular_avatar)
 
-            # 5. Escribir el texto (con control de errores de fuente)
+            # 6. Dibujar Texto Grande y Profesional
             draw = ImageDraw.Draw(fondo)
-            try:
-                # Intentamos cargar una fuente básica. Si Railway no la tiene, usará la default
-                font = ImageFont.load_default()
-            except:
-                font = None
-
+            
+            # Tamaño de fuente mucho más grande (ajusta el 60 si lo quieres aún más grande)
+            font_main = ImageFont.truetype(fuente_pro, 60) 
+            
             texto_bienvenida = f"BIENVENIDO/A {member.name.upper()}"
             
-            if font:
-                # Calculamos el centro del texto
-                w = draw.textlength(texto_bienvenida, font=font)
-                draw.text(((fondo.width - w) // 2, pos_y + size[1] + 40), texto_bienvenida, fill="white", font=font)
+            # Centrar el texto
+            bbox = draw.textbbox((0, 0), texto_bienvenida, font=font_main)
+            w = bbox[2] - bbox[0]
+            
+            # Dibujamos el texto con un color blanco puro
+            draw.text(((fondo.width - w) // 2, pos_y + size[1] + 40), texto_bienvenida, fill="white", font=font_main)
 
-            # 6. Preparar el archivo para enviar
+            # 7. Enviar
             with io.BytesIO() as img_bin:
                 fondo.save(img_bin, format='PNG')
                 img_bin.seek(0)
                 discord_file = discord.File(fp=img_bin, filename=f'bienvenida_{member.id}.png')
-                
-                # Enviar imagen personalizada
                 await channel.send(
                     content=f"¡Bienvenido/a {member.mention}! Pásate por <#1462235098198970611> para ver lo que hacemos.", 
                     file=discord_file
                 )
         
         except Exception as e:
-            # Si algo falla en el proceso de Pillow, enviamos la bienvenida normal para no dejar al usuario sin saludo
-            print(f"Error generando imagen personalizada: {e}")
-            await channel.send(f"¡Bienvenido/a {member.mention} a MNZ Leaks! Pásate por <#1462235098198970611>.")
+            print(f"Error en imagen personalizada: {e}")
+            await channel.send(f"¡Bienvenido/a {member.mention} a MNZ Leaks!")
 
-    # --- EL MD SE MANTIENE IGUAL PORQUE DICES QUE FUNCIONA BIEN ---
+    # --- MD (Mantenido igual) ---
     try:
         embed_md = discord.Embed(
             title="🚀 ¡Bienvenido a MNZ Leaks!",
