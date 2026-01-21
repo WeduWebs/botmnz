@@ -139,19 +139,45 @@ async def help_command(ctx):
 
 @bot.command(name="status")
 async def status(ctx):
+    # Creamos un Embed con estética profesional
     embed = discord.Embed(
-        title="🌐 Estado de los Servicios",
-        description="Verifica la disponibilidad de nuestros servicios en tiempo real:",
-        color=discord.Color.green(),
+        title="🌐 ESTADO DE LOS SERVICIOS",
+        description=(
+            "A continuación se detalla la disponibilidad de nuestros servicios en tiempo real.\n"
+            "Si experimentas algún problema, abre un ticket en <#1462161017068064889>."
+        ),
+        color=discord.Color.from_rgb(0, 0, 0), # Negro puro
         timestamp=discord.utils.utcnow()
     )
-    embed.add_field(name="🛠️ Optimización Windows", value="🟢 **OPERATIVO**", inline=False)
-    embed.add_field(name="🎮 Soporte FiveM", value="🟢 **OPERATIVO**", inline=False)
-    embed.add_field(name="🎟️ Sistema de Tickets", value="🟢 **OPERATIVO**", inline=False)
-    
-    embed.set_footer(text="Última actualización")
-    await ctx.send(embed=embed)
 
+    # Añadimos los campos de estado con mejor formato
+    embed.add_field(
+        name="🛠️ Optimización Windows", 
+        value="> 🟢 **OPERATIVO**", 
+        inline=False
+    )
+    embed.add_field(
+        name="🎮 Soporte FiveM", 
+        value="> 🟢 **OPERATIVO**", 
+        inline=False
+    )
+    embed.add_field(
+        name="🎟️ Sistema de Tickets", 
+        value="> 🟢 **OPERATIVO**", 
+        inline=False
+    )
+
+    # Thumbnail: El logo del servidor
+    if ctx.guild.icon:
+        embed.set_thumbnail(url=ctx.guild.icon.url)
+
+    # Footer profesional con logo
+    embed.set_footer(
+        text=f"{ctx.guild.name} • Monitorización de Red",
+        icon_url=ctx.guild.icon.url if ctx.guild.icon else None
+    )
+
+    await ctx.send(embed=embed)
 @bot.command(name="contacto")
 async def contacto(ctx):
     embed = discord.Embed(
