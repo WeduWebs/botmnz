@@ -22,7 +22,12 @@ intents.members = True
 # ELIMINAMOS EL HELP POR DEFECTO AQUÍ
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# ================== EVENTO DE BIENVENIDA (EMBED CON GIF ANIMADO) ==================
+Entendido, he ajustado el título a MNZ LEAKS y he cambiado el color del borde del Embed a negro absoluto para que se fusione totalmente con el fondo y el GIF.
+
+Aquí tienes el código de la función actualizado:
+
+Python
+# ================== EVENTO DE BIENVENIDA (EMBED NEGRO + GIF MNZ) ==================
 @bot.event
 async def on_member_join(member):
     ID_CANAL_BIENVENIDA = 1462161394324607161
@@ -33,18 +38,17 @@ async def on_member_join(member):
         # Obtenemos el número total de miembros del servidor
         total_miembros = member.guild.member_count
         
-        # Creamos el Embed con los colores solicitados (Rojo/Negro)
-        # Usamos Color.from_rgb(180, 0, 0) para un rojo intenso que combine con MNZ
+        # Color negro puro (0, 0, 0) para el borde del Embed
         embed = discord.Embed(
-            title="ONLY EXPOSED", # Título del formato enviado
+            title="MNZ LEAKS",
             description=f"**Bienvenida**\n\nTe damos la bienvenida a **MNZ Leaks**\n{member.mention} ya somos {total_miembros} personas en el discord",
-            color=discord.Color.from_rgb(180, 0, 0) 
+            color=discord.Color.from_rgb(0, 0, 0) 
         )
         
-        # Añadimos el GIF animado
+        # Añadimos tu GIF animado
         embed.set_image(url=URL_GIF)
         
-        # Pie de página siguiendo el formato
+        # Pie de página actualizado
         embed.set_footer(text="MNZ Leaks. | Bienvenida")
         
         # Enviamos el mensaje al canal
