@@ -16,7 +16,8 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+# ELIMINAMOS EL HELP POR DEFECTO AQUÍ
+bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
 # ================== VENTANA EMERGENTE (MODAL) ==================
 class AnuncioModal(discord.ui.Modal, title='Redactar Anuncio Oficial'):
@@ -41,14 +42,12 @@ class AnuncioModal(discord.ui.Modal, title='Redactar Anuncio Oficial'):
         await interaction.channel.send(embed=embed)
         await interaction.response.send_message("✅ Anuncio publicado con éxito.", ephemeral=True)
 
-# ================== READY (SIN CRASH) ==================
+# ================== READY ==================
 @bot.event
 async def on_ready():
     print(f"✅ Bot conectado como {bot.user}")
     try:
         guild = discord.Object(id=GUILD_ID)
-        # Sincronización segura: primero limpiamos los locales para evitar duplicados
-        bot.tree.clear_commands(guild=guild)
         bot.tree.copy_global_to(guild=guild)
         await bot.tree.sync(guild=guild)
         print(f"✨ Comandos sincronizados correctamente.")
@@ -112,7 +111,7 @@ async def mensaje(interaction: discord.Interaction):
         return
     await interaction.response.send_modal(AnuncioModal())
 
-# ================== COMANDO !opti (TEXTO COMPLETO RESTAURADO) ==================
+# ================== COMANDO !opti ==================
 @bot.command(name="opti")
 async def opti(ctx):
     embed = discord.Embed(
@@ -140,7 +139,7 @@ async def opti(ctx):
     embed.set_footer(text="MNZ Leaks • Calidad y Rendimiento")
     await ctx.send(embed=embed)
 
-# ================== COMANDO !pagos (RESTABLECIDO) ==================
+# ================== COMANDO !pagos ==================
 @bot.command(name="pagos")
 async def pagos(ctx):
     embed = discord.Embed(
@@ -158,18 +157,12 @@ async def pagos(ctx):
     embed.set_footer(text="Pagos seguros y verificados")
     await ctx.send(embed=embed)
 
-# ================== COMANDOS INDIVIDUALES DE PAGO ==================
-
 @bot.command(name="paypal")
 async def paypal(ctx):
     embed = discord.Embed(
         title="<:l_ppal:1463190933708210328> Información de PayPal",
-        description=(
-            "**Paypal:** `fmunozfdez@gmail.com` \n"
-            "**Modalidad:** Family & Friends"
-        ),
-        color=discord.Color.blue(),
-        timestamp=discord.utils.utcnow()
+        description="**Paypal:** `fmunozfdez@gmail.com` \n**Modalidad:** Family & Friends",
+        color=discord.Color.blue()
     )
     await ctx.send(embed=embed)
 
@@ -177,12 +170,8 @@ async def paypal(ctx):
 async def bizum(ctx):
     embed = discord.Embed(
         title="<:l_bzm:1463190383071592488> Información de Bizum",
-        description=(
-            "**Bizum:** `+34 609 55 07 14` \n"
-            "**Concepto:** Sin concepto"
-        ),
-        color=discord.Color.from_rgb(31, 191, 179),
-        timestamp=discord.utils.utcnow()
+        description="**Bizum:** `+34 609 55 07 14` \n**Concepto:** Sin concepto",
+        color=discord.Color.from_rgb(31, 191, 179)
     )
     await ctx.send(embed=embed)
 
@@ -190,13 +179,12 @@ async def bizum(ctx):
 async def crypto(ctx):
     embed = discord.Embed(
         title="<:l_btc:1463190321713250305> Información de Cripto",
-        description="Contacte con soporte para más información sobre este metodo de pago.",
-        color=discord.Color.orange(),
-        timestamp=discord.utils.utcnow()
+        description="Contacte con soporte para más información.",
+        color=discord.Color.orange()
     )
     await ctx.send(embed=embed)
 
-# ================== COMANDO !reseñas (TEXTO COMPLETO RESTAURADO) ==================
+# ================== COMANDO !reseñas ==================
 @bot.command(name="reseñas")
 async def reseñas(ctx):
     embed = discord.Embed(
@@ -207,8 +195,7 @@ async def reseñas(ctx):
             "1️⃣ Usa el comando **/vouch**.\n"
             "2️⃣ Selecciona una valoración de **5 estrellas** (⭐⭐⭐⭐⭐).\n"
             "3️⃣ Cuéntanos tu experiencia (el **antes y después** del servicio).\n"
-            "4️⃣ No olvides **adjuntar una prueba** (captura de pantalla).\n\n"
-            "¡Gracias por confiar en nosotros!"
+            "4️⃣ No olvides **adjuntar una prueba** (captura de pantalla)."
         ),
         color=discord.Color.from_rgb(255, 215, 0),
         timestamp=discord.utils.utcnow()
