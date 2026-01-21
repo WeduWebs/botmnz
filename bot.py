@@ -580,11 +580,7 @@ async def pablecho(ctx):
     )
     
     await ctx.send(embed=embed)
-Entendido, vamos a simplificarlo al máximo para que no falle. El problema suele ser que si el bot intenta borrar el mensaje y cambiar el nombre al mismo tiempo muy rápido, Discord se satura.
 
-Aquí tienes la versión de !rename ultra-reducida. He quitado toda la lógica compleja: ahora simplemente lee lo que pongas después del comando y cambia el nombre del canal, luego borra tu mensaje para que no quede rastro.
-
-Python
 # ================== COMANDO !RENAME (SIMPLE Y EFECTIVO) ==================
 @bot.command(name="rename")
 async def rename(ctx, *, nuevo_nombre: str):
