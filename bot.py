@@ -580,28 +580,32 @@ async def pablecho(ctx):
     )
     
     await ctx.send(embed=embed)
-# ================== SLASH COMMAND /RENAME (SILENCIOSO Y FUNCIONAL) ==================
-@bot.tree.command(name="rename", description="Cambia el nombre del canal actual de forma silenciosa")
-@app_commands.describe(nombre="El nuevo nombre para este canal")
-async def rename(interaction: discord.Interaction, nombre: str):
-    # Verificación de permisos de administrador
-    if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("❌ No tienes permisos para usar este comando.", ephemeral=True)
+# ================== COMANDO !RENAME (SILENCIOSO) ==================
+@bot.command(name="rename")
+async def rename(ctx, *, nuevo_nombre: str = None):
+    # 1. Verificación de permisos
+    if not ctx.author.guild_permissions.administrator:
+        try:
+            await ctx.message.delete() # Borramos el intento de uso si no es admin
+        except: pass
         return
 
-    # Usamos defer con ephemeral=True para evitar el error de "La aplicación no respondió"
-    # Esto le dice a Discord que el bot está procesando la solicitud.
-    await interaction.response.defer(ephemeral=True)
+    # 2. Verificar que se ha puesto un nombre
+    if not nuevo_nombre:
+        try:
+            await ctx.message.delete()
+        except: pass
+        return
 
     try:
-        # Realizamos el cambio de nombre
-        await interaction.channel.edit(name=nombre)
-        
-        # Confirmamos solo al administrador que se ha realizado con éxito
-        await interaction.followup.send(f"✅ Canal renombrado a `{nombre}` con éxito.", ephemeral=True)
+        # 3. Borramos el mensaje del administrador (!rename nombre)
+        await ctx.message.delete()
 
-    except discord.Forbidden:
-        await interaction.followup.send("❌ Error: No tengo permisos suficientes (revisa mi jerarquía de roles).", ephemeral=True)
+        # 4. Cambiamos el nombre del canal
+        await ctx.channel.edit(name=nuevo_nombre)
+        
+        # No enviamos NINGÚN mensaje de confirmación para que sea 100% silencioso
+
     except Exception as e:
-        await interaction.followup.send(f"❌ Ocurrió un error inesperado: {e}", ephemeral=True)
+        print(f"Error en rename: {e}")
 bot.run(TOKEN)
