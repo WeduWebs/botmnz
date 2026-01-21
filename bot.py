@@ -307,7 +307,7 @@ class TicketControlView(discord.ui.View):
 class TicketDropdown(discord.ui.Select):
     def __init__(self):
         options = [
-            discord.SelectOption(label="Comprar Optimización", description="Abre un ticket para adquirir nuestros servicios.", emoji="<:emojidollar:1462171745917210735>", value="compra"),
+            discord.SelectOption(label="Compras", description="Abre un ticket para adquirir nuestros servicios.", emoji="<:emojidollar:1462171745917210735>", value="compra"),
             discord.SelectOption(label="Soporte / Dudas", description="Si tienes problemas técnicos o preguntas generales.", emoji="<:emojitio:1462159167920799754>", value="soporte"),
         ]
         super().__init__(placeholder="Selecciona una categoría...", min_values=1, max_values=1, options=options, custom_id="ticket_select")
