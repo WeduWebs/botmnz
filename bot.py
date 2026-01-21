@@ -22,12 +22,12 @@ intents.members = True
 # ELIMINAMOS EL HELP POR DEFECTO AQUÍ
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# ================== EVENTO DE BIENVENIDA CON FUENTE RUBIK ==================
+# ================== EVENTO DE BIENVENIDA ESTILO MNZ (FUENTE GRUESA) ==================
 @bot.event
 async def on_member_join(member):
     ID_CANAL_BIENVENIDA = 1462161394324607161
     URL_FONDO = "https://i.imgur.com/eB2c79T.png"
-    # URL directa de la fuente Rubik (Bold)
+    # Descargamos la versión Black (la más gruesa) de Rubik
     URL_FUENTE = "https://github.com/google/fonts/raw/main/ofl/rubik/Rubik%5Bwght%5D.ttf"
     
     channel = member.guild.get_channel(ID_CANAL_BIENVENIDA)
@@ -36,21 +36,18 @@ async def on_member_join(member):
         try:
             headers = {"User-Agent": "Mozilla/5.0"}
             
-            # 1. Descargar Fondo
+            # 1. Descargar recursos
             resp_fondo = requests.get(URL_FONDO, headers=headers, timeout=10)
             fondo = Image.open(io.BytesIO(resp_fondo.content)).convert("RGBA")
             
-            # 2. Descargar Avatar
-            avatar_url = member.display_avatar.with_format("png").url
-            resp_avatar = requests.get(avatar_url, headers=headers, timeout=10)
+            resp_avatar = requests.get(member.display_avatar.with_format("png").url, headers=headers, timeout=10)
             avatar_img = Image.open(io.BytesIO(resp_avatar.content)).convert("RGBA")
             
-            # 3. Descargar Fuente Rubik
             resp_font = requests.get(URL_FUENTE, headers=headers, timeout=10)
-            fuente_pro = io.BytesIO(resp_font.content)
+            fuente_data = io.BytesIO(resp_font.content)
 
-            # 4. Procesar Avatar Circular
-            size = (300, 300)
+            # 2. Procesar Avatar Circular (un poco más grande y centrado)
+            size = (280, 280)
             avatar_img = avatar_img.resize(size, Image.LANCZOS)
             mask = Image.new('L', size, 0)
             draw_mask = ImageDraw.Draw(mask)
@@ -59,41 +56,50 @@ async def on_member_join(member):
             circular_avatar = Image.new('RGBA', size, (0, 0, 0, 0))
             circular_avatar.paste(avatar_img, (0, 0), mask)
 
-            # 5. Pegar Avatar (Centrado)
+            # Pegar avatar
             pos_x = (fondo.width // 2) - (size[0] // 2)
-            pos_y = (fondo.height // 2) - (size[1] // 2) - 60 
+            pos_y = 120 # Posición fija arriba
             fondo.paste(circular_avatar, (pos_x, pos_y), circular_avatar)
 
-            # 6. Dibujar Texto con Rubik
+            # 3. Configurar Textos y Fuentes (Diferentes tamaños para jerarquía)
             draw = ImageDraw.Draw(fondo)
             
-            # Cargamos Rubik con un tamaño de 65 para que destaque
-            font_main = ImageFont.truetype(fuente_pro, 65) 
-            
-            texto_bienvenida = f"BIENVENIDO/A {member.name.upper()}"
-            
-            # Centrar el texto perfectamente
-            bbox = draw.textbbox((0, 0), texto_bienvenida, font=font_main)
-            w = bbox[2] - bbox[0]
-            
-            # Dibujar texto en blanco
-            draw.text(((fondo.width - w) // 2, pos_y + size[1] + 45), texto_bienvenida, fill="white", font=font_main)
+            # Cargamos Rubik con diferentes pesos/tamaños
+            font_big = ImageFont.truetype(fuente_data, 100)      # BIENVENID@
+            fuente_data.seek(0) # Resetear puntero para volver a leer
+            font_medium = ImageFont.truetype(fuente_data, 60)   # NOMBRE USER
+            fuente_data.seek(0)
+            font_small = ImageFont.truetype(fuente_data, 35)    # GRACIAS POR UNIRTE...
 
-            # 7. Enviar imagen generada
+            # Texto 1: BIENVENID@
+            txt1 = "BIENVENID@"
+            bbox1 = draw.textbbox((0, 0), txt1, font=font_big)
+            draw.text(((fondo.width - (bbox1[2]-bbox1[0])) // 2, 430), txt1, fill="white", font=font_big)
+
+            # Texto 2: NOMBRE DEL USUARIO (ASD AFGJJEA)
+            txt2 = member.name.upper()
+            bbox2 = draw.textbbox((0, 0), txt2, font=font_medium)
+            draw.text(((fondo.width - (bbox2[2]-bbox2[0])) // 2, 530), txt2, fill="white", font=font_medium)
+
+            # Texto 3: GRACIAS POR UNIRTE...
+            txt3 = "GRACIAS POR UNIRTE A MNZ LEAKS"
+            bbox3 = draw.textbbox((0, 0), txt3, font=font_small)
+            draw.text(((fondo.width - (bbox3[2]-bbox3[0])) // 2, 600), txt3, fill="white", font=font_small)
+
+            # 4. Enviar imagen
             with io.BytesIO() as img_bin:
                 fondo.save(img_bin, format='PNG')
                 img_bin.seek(0)
-                discord_file = discord.File(fp=img_bin, filename=f'bienvenida_rubik_{member.id}.png')
                 await channel.send(
-                    content=f"¡Bienvenido/a {member.mention}! Pásate por <#1462235098198970611> para ver lo que hacemos.", 
-                    file=discord_file
+                    content=f"¡Bienvenido/a {member.mention}! Pásate por <#1462235098198970611>.", 
+                    file=discord.File(fp=img_bin, filename=f'welcome_{member.id}.png')
                 )
         
         except Exception as e:
-            print(f"Error en imagen personalizada (Rubik): {e}")
+            print(f"Error: {e}")
             await channel.send(f"¡Bienvenido/a {member.mention} a MNZ Leaks!")
 
-    # --- MD (Se mantiene tu configuración que funciona) ---
+    # --- MD (Mensaje Directo) ---
     try:
         embed_md = discord.Embed(
             title="🚀 ¡Bienvenido a MNZ Leaks!",
@@ -102,17 +108,11 @@ async def on_member_join(member):
                 "En **MNZ Leaks** nos especializamos en llevar tu rendimiento al límite. "
                 "Si estás cansado de los tirones en FiveM o quieres ganar esos FPS extra para competir, "
                 "estás en el lugar adecuado.\n\n"
-                "**¿Qué puedes hacer ahora?**\n"
-                "• Mira nuestros resultados en el canal de pruebas.\n"
-                "• Usa `!opti` en el servidor para ver qué ofrecemos.\n"
-                "• Si estás listo para mejorar tu PC, abre un ticket con `/ticket`.\n\n"
                 "Cualquier duda, el staff estará encantado de ayudarte."
             ),
             color=discord.Color.from_rgb(1, 1, 1)
         )
-        embed_md.set_footer(text="MNZ Leaks • Calidad y Rendimiento garantizado")
-        if member.guild.icon:
-            embed_md.set_thumbnail(url=member.guild.icon.url)
+        embed_md.set_footer(text="MNZ Leaks • Calidad y Rendimiento")
         await member.send(embed=embed_md)
     except:
         pass
