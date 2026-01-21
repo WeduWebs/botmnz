@@ -326,5 +326,61 @@ async def munoz(ctx):
     embed = discord.Embed(description="Asi se ve el colega", color=discord.Color.from_rgb(1, 1, 1))
     embed.set_image(url="https://i.imgur.com/L5e0OfQ.png")
     await ctx.send(embed=embed)
+# ================== SISTEMA DE VERIFICACIÓN (BOTÓN Y ROL) ==================
 
+class VerificacionView(discord.ui.View):
+    """Clase para el botón de verificación persistente."""
+    def __init__(self):
+        super().__init__(timeout=None) # Importante: None hace que el botón no expire
+
+    @discord.ui.button(
+        label="Verificarse", 
+        style=discord.ButtonStyle.success, 
+        emoji="✅", 
+        custom_id="boton_verificacion_mnz" # ID única para que el bot lo reconozca tras reiniciar
+    )
+    async def verificacion_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        ID_ROL_VERIFICADO = 1462154710625550479
+        rol = interaction.guild.get_role(ID_ROL_VERIFICADO)
+
+        if not rol:
+            await interaction.response.send_message("❌ Error: No se encuentra el rol de verificación.", ephemeral=True)
+            return
+
+        if rol in interaction.user.roles:
+            await interaction.response.send_message("¡Ya estás verificado!", ephemeral=True)
+        else:
+            try:
+                await interaction.user.add_roles(rol)
+                await interaction.response.send_message("✅ Te has verificado correctamente. ¡Bienvenido a MNZ Leaks!", ephemeral=True)
+            except discord.Forbidden:
+                await interaction.response.send_message("❌ No tengo permisos suficientes para darte el rol. Revisa mi jerarquía.", ephemeral=True)
+
+# ================== COMANDO SLASH /setup-verificacion ==================
+
+@bot.tree.command(name="setup-verificacion", description="Envía el mensaje de verificación al canal")
+async def setup_verificacion(interaction: discord.Interaction):
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("❌ No tienes permisos para usar este comando.", ephemeral=True)
+        return
+
+    embed = discord.Embed(
+        title="🛡️ SISTEMA DE VERIFICACIÓN",
+        description=(
+            "Bienvenido a **MNZ Leaks**.\n\n"
+            "Para acceder al resto de canales, por favor pulsa el botón de abajo.\n\n"
+            "⚠️ **Al verificarte aceptas las normas del servidor.**"
+        ),
+        color=discord.Color.from_rgb(0, 0, 0) # Color Negro
+    )
+    
+    if interaction.guild.icon:
+        embed.set_thumbnail(url=interaction.guild.icon.url)
+    
+    embed.set_footer(text="MNZ Leaks • Verificación obligatoria")
+
+    # Enviamos el embed con el botón
+    await interaction.channel.send(embed=embed, view=VerificacionView())
+    await interaction.response.send_message("✅ Panel de verificación enviado.", ephemeral=True)
+    
 bot.run(TOKEN)
