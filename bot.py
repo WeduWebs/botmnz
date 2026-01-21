@@ -117,16 +117,16 @@ async def opti(ctx):
     embed = discord.Embed(
         title="🚀 OPTIMIZACIÓN MNZ LEAKS",
         description=(
-            "La optimizacion se trata de optimizar el Sistema Operativo al completo sin quitar ningun funcionalidad del Windows asi como hacen las optimizaciones normales que traen un sistema operativo.\n\n"
-            "La optimizacion MNZ se trata de quitar todos los ajustes que limitan tu ordenador y que hacen que vaya más lento, sin hacer ningun Overclock y sin quitar funciones del ordenador que te limitan en el resto de ámbitos.\n\n"
-            "✅ **Ventajas Principales:**\n"
-            "• **Rendimiento Extremo:** Es una optimizacion completa que sirve tanto para FiveM como para cualquier otro juego.\n"
-            "• **FPS Estables:** Subiendo la cantidad de FPS, en algunos casos hasta **+200FPS**, eliminando las caidas que fastidian tu jugabilidad y dejándolos estables.\n"
-            "• **Universal:** Sirve para cualquier PC con cualquier componente.\n"
-            "• **Seguridad Total:** No para ningún servicio, por lo que está hecha aprueba de cualquier tipo de Anticheat, SS, como Napse, nunca tendrás ningún problema.\n\n"
-            "💎 Contamos con el **precio más bajo** del mercado para una optimización profesional."
+            "Lleva tu PC al siguiente nivel con la optimización más completa y segura del mercado.\n\n"
+            "✅ **Sin recortes de funciones:** Optimizamos el Sistema Operativo al completo sin quitar ninguna funcionalidad de Windows, a diferencia de otras optimizaciones.\n\n"
+            "⚡ **Rendimiento Máximo:** Eliminamos todos los ajustes que limitan tu ordenador y ralentizan tu sistema.\n\n"
+            "📈 **FPS de Infarto:** Aumenta tus FPS de forma drástica (¡hasta **+200 FPS** en algunos casos!) y elimina esas caídas que arruinan tu jugabilidad.\n\n"
+            "🎮 **FiveM & Más:** Diseñada específicamente para FiveM, pero ideal para cualquier juego competitivo.\n\n"
+            "🛡️ **100% Seguro:** Sin Overclock y a prueba de cualquier Anticheat o SS (Napse, etc.). No tendrás ningún problema.\n\n"
+            "💻 **Universal:** Sirve para cualquier PC con cualquier componente.\n\n"
+            "💎 **Calidad/Precio:** Contamos con el **precio más bajo** garantizado para una optimización de este nivel."
         ),
-        color=discord.Color.blue(),
+        color=discord.Color.black(),
         timestamp=discord.utils.utcnow()
     )
     
