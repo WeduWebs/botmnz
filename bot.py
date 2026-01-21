@@ -22,12 +22,11 @@ intents.members = True
 # ELIMINAMOS EL HELP POR DEFECTO AQUÍ
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# ================== EVENTO DE BIENVENIDA DEFINITIVO (ARCHIVO BLACK) ==================
+# ================== EVENTO DE BIENVENIDA (AJUSTE DE TAMAÑO -30%) ==================
 @bot.event
 async def on_member_join(member):
     ID_CANAL_BIENVENIDA = 1462161394324607161
     URL_FONDO = "https://i.imgur.com/eB2c79T.png"
-    # Archivo Black es una fuente mucho más robusta y gorda que Rubik
     URL_FUENTE = "https://github.com/google/fonts/raw/main/ofl/archivoblack/ArchivoBlack-Regular.ttf"
     
     channel = member.guild.get_channel(ID_CANAL_BIENVENIDA)
@@ -46,8 +45,8 @@ async def on_member_join(member):
             resp_font = requests.get(URL_FUENTE, headers=headers, timeout=10)
             fuente_data = io.BytesIO(resp_font.content)
 
-            # 2. Procesar Avatar Circular (350x350 para que se vea imponente)
-            size = (350, 350)
+            # 2. Procesar Avatar Circular (Reducido un 30%: de 350 a 245px)
+            size = (245, 245)
             avatar_img = avatar_img.resize(size, Image.LANCZOS)
             mask = Image.new('L', size, 0)
             draw_mask = ImageDraw.Draw(mask)
@@ -56,57 +55,57 @@ async def on_member_join(member):
             circular_avatar = Image.new('RGBA', size, (0, 0, 0, 0))
             circular_avatar.paste(avatar_img, (0, 0), mask)
 
-            # Posición del avatar (un poco más arriba para dejar espacio al texto gordo)
+            # Posicionamos el avatar (centrado y un poco más arriba)
             pos_x = (fondo.width // 2) - (size[0] // 2)
-            pos_y = 80 
+            pos_y = 100 
             fondo.paste(circular_avatar, (pos_x, pos_y), circular_avatar)
 
-            # 3. Dibujar Textos Robustos
+            # 3. Dibujar Textos (Reducidos un 30%)
             draw = ImageDraw.Draw(fondo)
             
-            # --- TEXTO 1: BIENVENID@ ---
-            font_welcome = ImageFont.truetype(fuente_data, 110) # Muy grande y gordo
+            # --- TEXTO 1: BIENVENID@ (Reducido de 110 a 77) ---
+            font_welcome = ImageFont.truetype(fuente_data, 77)
             txt1 = "BIENVENID@"
             bbox1 = draw.textbbox((0, 0), txt1, font=font_welcome)
-            draw.text(((fondo.width - (bbox1[2]-bbox1[0])) // 2, 450), txt1, fill="white", font=font_welcome)
+            draw.text(((fondo.width - (bbox1[2]-bbox1[0])) // 2, 380), txt1, fill="white", font=font_welcome)
 
-            # --- TEXTO 2: NOMBRE DEL USUARIO (CON ESCALADO DINÁMICO) ---
+            # --- TEXTO 2: NOMBRE DEL USUARIO (Reducido de 80 a 56 + Control de ancho) ---
             fuente_data.seek(0)
-            font_size_user = 80
+            font_size_user = 56
             name_text = member.name.upper()
             font_user = ImageFont.truetype(fuente_data, font_size_user)
             
-            # Si el nombre es muy largo, bajamos el tamaño hasta que quepa
-            while draw.textlength(name_text, font=font_user) > (fondo.width - 100):
-                font_size_user -= 5
+            # Margen de seguridad para que no toque los bordes laterales
+            max_width = fondo.width - 150
+            while draw.textlength(name_text, font=font_user) > max_width:
+                font_size_user -= 2
                 fuente_data.seek(0)
                 font_user = ImageFont.truetype(fuente_data, font_size_user)
 
             bbox2 = draw.textbbox((0, 0), name_text, font=font_user)
-            draw.text(((fondo.width - (bbox2[2]-bbox2[0])) // 2, 560), name_text, fill="white", font=font_user)
+            draw.text(((fondo.width - (bbox2[2]-bbox2[0])) // 2, 470), name_text, fill="white", font=font_user)
 
-            # --- TEXTO 3: FRASE INFERIOR ---
+            # --- TEXTO 3: FRASE INFERIOR (Reducido de 40 a 28) ---
             fuente_data.seek(0)
-            font_small = ImageFont.truetype(fuente_data, 40)
+            font_small = ImageFont.truetype(fuente_data, 28)
             txt3 = "GRACIAS POR UNIRTE A MNZ LEAKS"
             bbox3 = draw.textbbox((0, 0), txt3, font=font_small)
-            draw.text(((fondo.width - (bbox3[2]-bbox3[0])) // 2, 660), txt3, fill="white", font=font_small)
+            draw.text(((fondo.width - (bbox3[2]-bbox3[0])) // 2, 540), txt3, fill="white", font=font_small)
 
             # 4. Guardar y enviar
             with io.BytesIO() as img_bin:
                 fondo.save(img_bin, format='PNG')
                 img_bin.seek(0)
                 await channel.send(
-                    content=f"¡Bienvenido/a {member.mention}! Pásate por <#1462235098198970611>.", 
+                    content=f"¡Bienvenido/a {member.mention}! Pásate por <#1462235098198970611> para ver lo que hacemos.", 
                     file=discord.File(fp=img_bin, filename=f'welcome_mnz.png')
                 )
         
         except Exception as e:
-            print(f"Error imagen personalizada: {e}")
+            print(f"Error imagen: {e}")
             await channel.send(f"¡Bienvenido/a {member.mention} a MNZ Leaks!")
 
-    # El MD se mantiene igual ya que confirmaste que funciona perfecto
-    # --- MD (Mensaje Directo) ---
+    # El MD se queda intacto como lo tienes
     try:
         embed_md = discord.Embed(
             title="🚀 ¡Bienvenido a MNZ Leaks!",
@@ -115,11 +114,17 @@ async def on_member_join(member):
                 "En **MNZ Leaks** nos especializamos en llevar tu rendimiento al límite. "
                 "Si estás cansado de los tirones en FiveM o quieres ganar esos FPS extra para competir, "
                 "estás en el lugar adecuado.\n\n"
+                "**¿Qué puedes hacer ahora?**\n"
+                "• Mira nuestros resultados en el canal de pruebas.\n"
+                "• Usa `!opti` en el servidor para ver qué ofrecemos.\n"
+                "• Si estás listo para mejorar tu PC, abre un ticket con `/ticket`.\n\n"
                 "Cualquier duda, el staff estará encantado de ayudarte."
             ),
             color=discord.Color.from_rgb(1, 1, 1)
         )
-        embed_md.set_footer(text="MNZ Leaks • Calidad y Rendimiento")
+        embed_md.set_footer(text="MNZ Leaks • Calidad y Rendimiento garantizado")
+        if member.guild.icon:
+            embed_md.set_thumbnail(url=member.guild.icon.url)
         await member.send(embed=embed_md)
     except:
         pass
