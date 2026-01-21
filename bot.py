@@ -65,29 +65,47 @@ async def on_member_join(member):
     except:
         pass
 
-# ================== VENTANA EMERGENTE (MODAL) ==================
+# ================== VENTANA EMERGENTE (MODAL) PROFESIONAL ==================
 class AnuncioModal(discord.ui.Modal, title='Redactar Anuncio Oficial'):
     texto_anuncio = discord.ui.TextInput(
         label='Contenido del anuncio',
         style=discord.TextStyle.paragraph,
-        placeholder='Escribe aquí tu anuncio... Puedes usar la tecla Enter para separar párrafos.',
+        placeholder='Escribe aquí el cuerpo del mensaje...',
         required=True,
         min_length=1,
         max_length=2000,
     )
 
     async def on_submit(self, interaction: discord.Interaction):
+        # Creamos un Embed con un diseño mucho más cuidado
         embed = discord.Embed(
-            title="📢 ANUNCIO OFICIAL",
-            description=self.texto_anuncio.value,
-            color=discord.Color.from_rgb(180, 0, 0),
+            title="📢  ANUNCIO OFICIAL",
+            description=f"\n{self.texto_anuncio.value}\n",
+            color=discord.Color.from_rgb(0, 0, 0), # Negro elegante
             timestamp=discord.utils.utcnow()
         )
-        embed.set_footer(text="Equipo de Administración • Mensaje oficial")
-        
-        await interaction.channel.send(embed=embed)
-        await interaction.response.send_message("✅ Anuncio publicado con éxito.", ephemeral=True)
 
+        # 1. Autor: Aparece arriba en pequeño con la foto del Admin
+        embed.set_author(
+            name=f"Publicado por {interaction.user.display_name}", 
+            icon_url=interaction.user.display_avatar.url
+        )
+
+        # 2. Thumbnail: El logo del servidor en la esquina superior derecha
+        if interaction.guild.icon:
+            embed.set_thumbnail(url=interaction.guild.icon.url)
+
+        # 3. Footer: Más limpio y con el nombre del servidor
+        embed.set_footer(
+            text=f"{interaction.guild.name} • Sistema de Comunicación",
+            icon_url=interaction.guild.icon.url if interaction.guild.icon else None
+        )
+
+        # Enviamos el mensaje al canal
+        await interaction.channel.send(embed=embed)
+        
+        # Confirmación invisible para el admin
+        await interaction.response.send_message("✅ El anuncio se ha publicado con formato profesional.", ephemeral=True)
 # ================== READY ==================
 @bot.event
 async def on_ready():
