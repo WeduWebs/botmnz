@@ -62,6 +62,34 @@ async def mensaje(interaction: discord.Interaction):
         return
     await interaction.response.send_modal(AnuncioModal())
 
+# ================== COMANDO !opti (OPTIMIZACIÓN) ==================
+@bot.command(name="opti")
+async def opti(ctx):
+    embed = discord.Embed(
+        title="🚀 OPTIMIZACIÓN MNZ LEAKS",
+        description=(
+            "Lleva tu PC al siguiente nivel con la optimización más completa y segura del mercado.\n\n"
+            "✅ **Sin recortes de funciones:** Optimizamos el Sistema Operativo al completo sin quitar ninguna funcionalidad de Windows, a diferencia de otras optimizaciones.\n\n"
+            "⚡ **Rendimiento Máximo:** Eliminamos todos los ajustes que limitan tu ordenador y ralentizan tu sistema.\n\n"
+            "📈 **FPS de Infarto:** Aumenta tus FPS de forma drástica (¡hasta **+200 FPS** en algunos casos!) y elimina esas caídas que arruinan tu jugabilidad.\n\n"
+            "🎮 **FiveM & Más:** Diseñada específicamente para FiveM, pero ideal para cualquier juego competitivo.\n\n"
+            "🛡️ **100% Seguro:** Sin Overclock y a prueba de cualquier Anticheat o SS (Napse, etc.). No tendrás ningún problema.\n\n"
+            "💻 **Universal:** Sirve para cualquier PC con cualquier componente.\n\n"
+            "💎 **Calidad/Precio:** Contamos con el **precio más bajo** garantizado para una optimización de este nivel."
+        ),
+        color=discord.Color.blue(),
+        timestamp=discord.utils.utcnow()
+    )
+    
+    embed.add_field(
+        name="📊 Mira los Resultados",
+        value="[Haz clic aquí para ver pruebas reales](https://discord.com/channels/1462154477040701605/1462235098198970611)",
+        inline=False
+    )
+    
+    embed.set_footer(text="MNZ Leaks • Calidad y Rendimiento")
+    await ctx.send(embed=embed)
+
 # ================== COMANDO !pagos (MENÚ) ==================
 @bot.command(name="pagos")
 async def pagos(ctx):
@@ -103,7 +131,7 @@ async def bizum(ctx):
             "**Número:** `+34 609 55 07 14` \n"
             "**Concepto:** Sin concepto"
         ),
-        color=discord.Color.from_rgb(31, 191, 179), # Color característico de Bizum
+        color=discord.Color.from_rgb(31, 191, 179),
         timestamp=discord.utils.utcnow()
     )
     await ctx.send(embed=embed)
