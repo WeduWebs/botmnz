@@ -382,5 +382,48 @@ async def setup_verificacion(interaction: discord.Interaction):
     # Enviamos el embed con el botón
     await interaction.channel.send(embed=embed, view=VerificacionView())
     await interaction.response.send_message("✅ Panel de verificación enviado.", ephemeral=True)
-    
+    # ================== COMANDO SLASH /CLEAR (LIMPIEZA) ==================
+
+@bot.tree.command(name="clear", description="Limpia mensajes del canal o de un usuario específico")
+@app_commands.describe(
+    cantidad="Número de mensajes a eliminar del canal actual",
+    usuario="Usuario del cual quieres borrar todos sus mensajes recientes"
+)
+async def clear(interaction: discord.Interaction, cantidad: int = None, usuario: discord.Member = None):
+    # Verificación de permisos de administrador
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("❌ No tienes permisos para usar este comando.", ephemeral=True)
+        return
+
+    # Caso 1: No se ha pasado ningún parámetro
+    if cantidad is None and usuario is None:
+        await interaction.response.send_message("⚠️ Debes especificar una `cantidad` o un `usuario`.", ephemeral=True)
+        return
+
+    await interaction.response.defer(ephemeral=True) # Evita que el comando expire si tarda mucho
+
+    # CASO A: Borrar mensajes de un usuario en todo el servidor (mensajes recientes)
+    if usuario:
+        deleted_total = 0
+        await interaction.followup.send(f"⏳ Buscando y eliminando mensajes de {usuario.mention} en todo el servidor...", ephemeral=True)
+        
+        for channel in interaction.guild.text_channels:
+            try:
+                # Limitamos a 100 por canal para no saturar el bot, puedes subirlo si quieres
+                def check(m): return m.author == usuario
+                deleted = await channel.purge(limit=100, check=check)
+                deleted_total += len(deleted)
+            except:
+                continue
+        
+        await interaction.followup.send(f"✅ Se han eliminado **{deleted_total}** mensajes de {usuario.mention} encontrados en el servidor.", ephemeral=True)
+
+    # CASO B: Borrar X cantidad de mensajes en el canal actual
+    elif cantidad:
+        if cantidad <= 0:
+            await interaction.followup.send("❌ La cantidad debe ser mayor a 0.", ephemeral=True)
+            return
+            
+        deleted = await interaction.channel.purge(limit=cantidad)
+        await interaction.followup.send(f"✅ Se han eliminado **{len(deleted)}** mensajes del canal.", ephemeral=True)
 bot.run(TOKEN)
