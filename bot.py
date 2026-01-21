@@ -580,4 +580,43 @@ async def pablecho(ctx):
     )
     
     await ctx.send(embed=embed)
+    # ================== COMANDO $RENAME (SOLO ADMINS) ==================
+@bot.command(name="rename")
+async def rename(ctx, *, nuevo_nombre: str):
+    # Verificación de permisos de administrador
+    if not ctx.author.guild_permissions.administrator:
+        embed_error = discord.Embed(
+            description="❌ No tienes permisos para renombrar canales.",
+            color=discord.Color.red()
+        )
+        return await ctx.send(embed=embed_error, delete_after=5)
+
+    try:
+        nombre_anterior = ctx.channel.name
+        # Cambiamos el nombre del canal
+        await ctx.channel.edit(name=nuevo_nombre)
+        
+        embed_success = discord.Embed(
+            title="📝 CANAL RENOMBRADO",
+            description=f"El canal ha sido actualizado correctamente.",
+            color=discord.Color.from_rgb(0, 0, 0)
+        )
+        embed_success.add_field(name="Antes", value=f"`{nombre_anterior}`", inline=True)
+        embed_success.add_field(name="Ahora", value=f"`{nuevo_nombre}`", inline=True)
+        
+        if ctx.guild.icon:
+            embed_success.set_author(name="MNZ Leaks", icon_url=ctx.guild.icon.url)
+            embed_success.set_footer(text="Gestión de Tickets", icon_url=ctx.guild.icon.url)
+
+        await ctx.send(embed=embed_success)
+
+    except discord.Forbidden:
+        await ctx.send("❌ No tengo permisos suficientes para editar este canal.")
+    except Exception as e:
+        await ctx.send(f"❌ Ocurrió un error: {e}")
+
+@rename.error
+async def rename_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("⚠️ Uso correcto: `$rename nombre-del-ticket`", delete_after=5)
 bot.run(TOKEN)
