@@ -126,7 +126,7 @@ async def opti(ctx):
             "💻 **Universal:** Sirve para cualquier PC con cualquier componente.\n\n"
             "💎 **Calidad/Precio:** Contamos con el **precio más bajo** garantizado para una optimización de este nivel."
         ),
-        color=discord.Color.black(),
+        color=discord.Color.from_rgb(1, 1, 1), # COLOR NEGRO AJUSTADO
         timestamp=discord.utils.utcnow()
     )
     
