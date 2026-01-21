@@ -95,7 +95,7 @@ async def contacto(ctx):
         description=(
             "¿Tienes dudas antes de comprar? ¿Necesitas soporte técnico?\n\n"
             "📩 **Tickets:** Abre un ticket en el canal correspondiente.\n"
-            "👤 **Dueño:** <@1462154477040701605> (Menciona solo si es urgente).\n"
+            "👤 **Dueño:** <@703511537809096705> o <@481118936583110675> (Menciona solo si es urgente).\n"
             "⏰ **Horario:** Respondemos lo más rápido posible (09:00 - 22:00 CET)."
         ),
         color=discord.Color.purple(),
