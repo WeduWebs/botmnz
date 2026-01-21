@@ -22,13 +22,13 @@ intents.members = True
 # ELIMINAMOS EL HELP POR DEFECTO AQUÍ
 bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
-# ================== EVENTO DE BIENVENIDA CON FUENTE PROFESIONAL ==================
+# ================== EVENTO DE BIENVENIDA CON FUENTE RUBIK ==================
 @bot.event
 async def on_member_join(member):
     ID_CANAL_BIENVENIDA = 1462161394324607161
     URL_FONDO = "https://i.imgur.com/eB2c79T.png"
-    # Fuente profesional (Roboto Bold) para que no dependa del sistema
-    URL_FUENTE = "https://github.com/google/fonts/raw/main/apache/robotoslab/RobotoSlab%5Bwght%5D.ttf"
+    # URL directa de la fuente Rubik (Bold)
+    URL_FUENTE = "https://github.com/google/fonts/raw/main/ofl/rubik/Rubik%5Bwght%5D.ttf"
     
     channel = member.guild.get_channel(ID_CANAL_BIENVENIDA)
     
@@ -45,12 +45,12 @@ async def on_member_join(member):
             resp_avatar = requests.get(avatar_url, headers=headers, timeout=10)
             avatar_img = Image.open(io.BytesIO(resp_avatar.content)).convert("RGBA")
             
-            # 3. Descargar Fuente Profesional
+            # 3. Descargar Fuente Rubik
             resp_font = requests.get(URL_FUENTE, headers=headers, timeout=10)
             fuente_pro = io.BytesIO(resp_font.content)
 
             # 4. Procesar Avatar Circular
-            size = (300, 300) # Un poco más grande
+            size = (300, 300)
             avatar_img = avatar_img.resize(size, Image.LANCZOS)
             mask = Image.new('L', size, 0)
             draw_mask = ImageDraw.Draw(mask)
@@ -59,41 +59,41 @@ async def on_member_join(member):
             circular_avatar = Image.new('RGBA', size, (0, 0, 0, 0))
             circular_avatar.paste(avatar_img, (0, 0), mask)
 
-            # 5. Pegar Avatar
+            # 5. Pegar Avatar (Centrado)
             pos_x = (fondo.width // 2) - (size[0] // 2)
             pos_y = (fondo.height // 2) - (size[1] // 2) - 60 
             fondo.paste(circular_avatar, (pos_x, pos_y), circular_avatar)
 
-            # 6. Dibujar Texto Grande y Profesional
+            # 6. Dibujar Texto con Rubik
             draw = ImageDraw.Draw(fondo)
             
-            # Tamaño de fuente mucho más grande (ajusta el 60 si lo quieres aún más grande)
-            font_main = ImageFont.truetype(fuente_pro, 60) 
+            # Cargamos Rubik con un tamaño de 65 para que destaque
+            font_main = ImageFont.truetype(fuente_pro, 65) 
             
             texto_bienvenida = f"BIENVENIDO/A {member.name.upper()}"
             
-            # Centrar el texto
+            # Centrar el texto perfectamente
             bbox = draw.textbbox((0, 0), texto_bienvenida, font=font_main)
             w = bbox[2] - bbox[0]
             
-            # Dibujamos el texto con un color blanco puro
-            draw.text(((fondo.width - w) // 2, pos_y + size[1] + 40), texto_bienvenida, fill="white", font=font_main)
+            # Dibujar texto en blanco
+            draw.text(((fondo.width - w) // 2, pos_y + size[1] + 45), texto_bienvenida, fill="white", font=font_main)
 
-            # 7. Enviar
+            # 7. Enviar imagen generada
             with io.BytesIO() as img_bin:
                 fondo.save(img_bin, format='PNG')
                 img_bin.seek(0)
-                discord_file = discord.File(fp=img_bin, filename=f'bienvenida_{member.id}.png')
+                discord_file = discord.File(fp=img_bin, filename=f'bienvenida_rubik_{member.id}.png')
                 await channel.send(
                     content=f"¡Bienvenido/a {member.mention}! Pásate por <#1462235098198970611> para ver lo que hacemos.", 
                     file=discord_file
                 )
         
         except Exception as e:
-            print(f"Error en imagen personalizada: {e}")
+            print(f"Error en imagen personalizada (Rubik): {e}")
             await channel.send(f"¡Bienvenido/a {member.mention} a MNZ Leaks!")
 
-    # --- MD (Mantenido igual) ---
+    # --- MD (Se mantiene tu configuración que funciona) ---
     try:
         embed_md = discord.Embed(
             title="🚀 ¡Bienvenido a MNZ Leaks!",
