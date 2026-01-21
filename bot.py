@@ -580,32 +580,46 @@ async def pablecho(ctx):
     )
     
     await ctx.send(embed=embed)
-# ================== COMANDO !RENAME (SILENCIOSO) ==================
-@bot.command(name="rename")
-async def rename(ctx, *, nuevo_nombre: str = None):
-    # 1. Verificación de permisos
-    if not ctx.author.guild_permissions.administrator:
-        try:
-            await ctx.message.delete() # Borramos el intento de uso si no es admin
-        except: pass
-        return
+Entendido, vamos a simplificarlo al máximo para que no falle. El problema suele ser que si el bot intenta borrar el mensaje y cambiar el nombre al mismo tiempo muy rápido, Discord se satura.
 
-    # 2. Verificar que se ha puesto un nombre
-    if not nuevo_nombre:
-        try:
-            await ctx.message.delete()
-        except: pass
+Aquí tienes la versión de !rename ultra-reducida. He quitado toda la lógica compleja: ahora simplemente lee lo que pongas después del comando y cambia el nombre del canal, luego borra tu mensaje para que no quede rastro.
+
+Python
+# ================== COMANDO !RENAME (SIMPLE Y EFECTIVO) ==================
+@bot.command(name="rename")
+async def rename(ctx, *, nuevo_nombre: str):
+    # Verificación de permisos de administrador
+    if not ctx.author.guild_permissions.administrator:
         return
 
     try:
-        # 3. Borramos el mensaje del administrador (!rename nombre)
-        await ctx.message.delete()
-
-        # 4. Cambiamos el nombre del canal
+        # 1. Cambiamos el nombre del canal (Discord pone los guiones solo)
         await ctx.channel.edit(name=nuevo_nombre)
         
-        # No enviamos NINGÚN mensaje de confirmación para que sea 100% silencioso
-
+        # 2. Borramos el mensaje !rename para que sea silencioso
+        await ctx.message.delete()
+        
     except Exception as e:
-        print(f"Error en rename: {e}")
+        print(f"Error al renombrar: {e}")
+        # ================== AUTO-LIMPIEZA DE COMANDOS (!) ==================
+@bot.event
+async def on_message(message):
+    # Ignorar mensajes del propio bot
+    if message.author.bot:
+        return
+
+
+
+    # 2. LIMPIEZA DE COMANDOS QUE EMPIECAN CON "!"
+    if message.content.startswith("!"):
+        try:
+            # Borramos el mensaje del usuario para no dejar rastro
+            await message.delete()
+        except discord.Forbidden:
+            print("❌ No tengo permisos para borrar mensajes (Gestionar Mensajes).")
+        except discord.NotFound:
+            pass # El mensaje ya fue borrado
+
+    # IMPORTANTE: Procesar los comandos después de borrar el mensaje
+    await bot.process_commands(message)
 bot.run(TOKEN)
