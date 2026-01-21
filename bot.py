@@ -144,7 +144,7 @@ async def status(ctx):
         title="🌐 ESTADO DE LOS SERVICIOS",
         description=(
             "A continuación se detalla la disponibilidad de nuestros servicios en tiempo real.\n"
-            "Si experimentas algún problema, abre un ticket en <#1462161017068064889>."
+            "Si experimentas algún problema, abre un ticket."
         ),
         color=discord.Color.from_rgb(0, 0, 0), # Negro puro
         timestamp=discord.utils.utcnow()
@@ -557,4 +557,27 @@ async def on_message(message):
 
     # IMPORTANTE: Esto permite que otros comandos !prefix sigan funcionando
     await bot.process_commands(message)
+    # ================== COMANDO BROMA !PABLECHO ==================
+@bot.command(name="pablecho")
+async def pablecho(ctx):
+    embed = discord.Embed(
+        description="**El colega en cuestión:**",
+        color=discord.Color.from_rgb(0, 0, 0), # Negro profesional
+        timestamp=discord.utils.utcnow()
+    )
+    
+    # Imagen de la broma
+    embed.set_image(url="https://i.imgur.com/0qowNru.png")
+    
+    # Logo del servidor en pequeño (Thumbnail)
+    if ctx.guild.icon:
+        embed.set_thumbnail(url=ctx.guild.icon.url)
+        
+    # Footer profesional
+    embed.set_footer(
+        text=f"{ctx.guild.name} • MNZ Humor", 
+        icon_url=ctx.guild.icon.url if ctx.guild.icon else None
+    )
+    
+    await ctx.send(embed=embed)
 bot.run(TOKEN)
